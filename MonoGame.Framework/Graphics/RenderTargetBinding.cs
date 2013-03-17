@@ -45,25 +45,44 @@ using System;
 namespace Microsoft.Xna.Framework.Graphics
 {
 	// http://msdn.microsoft.com/en-us/library/ff434403.aspx
-	// TODO: Implement RenderTargetCube
 	public struct RenderTargetBinding
 	{
-		internal Texture _renderTarget;
-		internal bool isTargetCube;
+        private Texture _renderTarget;
+        private CubeMapFace _cubeMapFace;
 
-		public RenderTargetBinding (RenderTarget2D renderTarget)
-			{
-			if (renderTarget == null) {
-				throw new ArgumentNullException ("renderTarget");
-			}
+		public Texture RenderTarget 
+        {
+			get { return _renderTarget; }
+		}
+
+        public CubeMapFace CubeMapFace
+        {
+            get { return _cubeMapFace; }
+        }
+
+		public RenderTargetBinding(RenderTarget2D renderTarget)
+		{
+			if (renderTarget == null) 
+				throw new ArgumentNullException("renderTarget");
+
 			_renderTarget = renderTarget;
-			isTargetCube = false;
+            _cubeMapFace = CubeMapFace.PositiveX;
 		}
 
-		public Texture RenderTarget {
-			get {
-				return _renderTarget;
-			}
-		}
+        public RenderTargetBinding(RenderTargetCube renderTarget, CubeMapFace cubeMapFace)
+        {
+            if (renderTarget == null)
+                throw new ArgumentNullException("renderTarget");
+            if (cubeMapFace < CubeMapFace.PositiveX || cubeMapFace > CubeMapFace.NegativeZ)
+                throw new ArgumentOutOfRangeException("cubeMapFace");
+
+            _renderTarget = renderTarget;
+            _cubeMapFace = cubeMapFace;
+        }
+
+        public static implicit operator RenderTargetBinding(RenderTarget2D renderTarget)
+        {
+            return new RenderTargetBinding(renderTarget);
+        }
 	}
 }

@@ -37,7 +37,7 @@ permitted under your local laws, the contributors exclude the implied warranties
 purpose and non-infringement.
 */
 #endregion License
-﻿
+
 using System;
 using System.IO;
 
@@ -76,7 +76,7 @@ namespace Microsoft.Xna.Framework.Audio
             ALFormat format;
             int size;
             int freq;
-            byte[] data;
+            //byte[] data;
             Stream s;
 
             try
@@ -88,7 +88,7 @@ namespace Microsoft.Xna.Framework.Audio
                 throw new Content.ContentLoadException("Could not load audio data", e);
             }
 
-            data = LoadAudioStream(s, 1.0f, false);
+            _data = LoadAudioStream(s, 1.0f, false);
 
             s.Close();			
 		}
@@ -114,42 +114,54 @@ namespace Microsoft.Xna.Framework.Audio
             _data = LoadAudioStream(s, 1.0f, false);
 
 		}
-		
+
+        internal SoundEffect(Stream s)
+        {
+            _data = LoadAudioStream(s, 1.0f, false);
+        }
+
 		public SoundEffect(byte[] buffer, int sampleRate, AudioChannels channels)
 		{
 			//buffer should contain 16-bit PCM wave data
 			short bitsPerSample = 16;
-			
-			MemoryStream mStream = new MemoryStream(44+buffer.Length);
-			BinaryWriter writer = new BinaryWriter(mStream);
-			
-			writer.Write("RIFF".ToCharArray()); //chunk id
-			writer.Write((int)(36+buffer.Length)); //chunk size
-			writer.Write("WAVE".ToCharArray()); //RIFF type
-			
-			writer.Write("fmt ".ToCharArray()); //chunk id
-			writer.Write((int)16); //format header size
-			writer.Write((short)1); //format (PCM)
-			writer.Write((short)channels);
-			writer.Write((int)sampleRate);
-			short blockAlign = (short)((bitsPerSample/8)*(int)channels);
-			writer.Write((int)(sampleRate*blockAlign)); //byte rate
-			writer.Write((short)blockAlign);
-			writer.Write((short)bitsPerSample);
-			
-			writer.Write("data".ToCharArray()); //chunk id
-			writer.Write((int)buffer.Length); //data size
-			writer.Write(buffer);
-			
-			writer.Close();
-			mStream.Close();
-			
-			//_data = mStream.ToArray();
-			_name = "";
-			_data = LoadAudioStream(mStream, 1.0f, false);
+
+            using (MemoryStream mStream = new MemoryStream(44 + buffer.Length))
+            {
+                using (BinaryWriter writer = new BinaryWriter(mStream))
+                {
+
+                    writer.Write("RIFF".ToCharArray()); //chunk id
+                    writer.Write((int)(36 + buffer.Length)); //chunk size
+                    writer.Write("WAVE".ToCharArray()); //RIFF type
+
+                    writer.Write("fmt ".ToCharArray()); //chunk id
+                    writer.Write((int)16); //format header size
+                    writer.Write((short)1); //format (PCM)
+                    writer.Write((short)channels);
+                    writer.Write((int)sampleRate);
+                    short blockAlign = (short)((bitsPerSample / 8) * (int)channels);
+                    writer.Write((int)(sampleRate * blockAlign)); //byte rate
+                    writer.Write((short)blockAlign);
+                    writer.Write((short)bitsPerSample);
+
+                    writer.Write("data".ToCharArray()); //chunk id
+                    writer.Write((int)buffer.Length); //data size
+                    writer.Write(buffer);
+
+                    // re position to the start otherwise we cannot read the stream
+                    mStream.Seek(0, SeekOrigin.Begin);
+                    //_data = mStream.ToArray();
+                    _name = "";
+                    _data = LoadAudioStream(mStream, 1.0f, false);
+
+                    // close the steam after we have finished reading.
+                    writer.Close();
+                    mStream.Close();
+                }
+            }
 			//_sound = new Sound(_data, 1.0f, false);
-		}
-		
+		}        
+
         byte[] LoadAudioStream(Stream s, float volume, bool looping)
         {
             ALFormat format;
@@ -172,7 +184,7 @@ namespace Microsoft.Xna.Framework.Audio
 
         public bool Play()
         {
-            return Play(MasterVolume, 1.0f, 0.0f);
+            return Play(MasterVolume, 0.0f, 0.0f);
         }
 
         public bool Play(float volume, float pitch, float pan)
@@ -216,6 +228,11 @@ namespace Microsoft.Xna.Framework.Audio
         }
 
         #region IDisposable Members
+
+        public bool IsDisposed
+        {
+            get { return false; }
+        }
 
         public void Dispose()
         {
@@ -289,7 +306,12 @@ namespace Microsoft.Xna.Framework.Audio
             {
                 speedOfSound = value;
             }
-        }		
+        }
+
+        public static SoundEffect FromStream(Stream stream)
+        {
+            return new SoundEffect(stream);
+        }
     }
 }
 

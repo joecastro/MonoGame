@@ -1,78 +1,54 @@
-# MonoGame Goes Multi-Plaform : MonoGame 2.0 Released
+# [MonoGame](http://monogame.net/) <a href='http://monogame.net/' target='_blank'><img src='https://github.com/mono/MonoGame/blob/develop/Graphics/Logos/MonogameLogo32x32.png?raw=true' width='16' height='16'></a> [![Build Status](http://build.monogame.net/job/develop-win/badge/icon)](http://build.monogame.net/job/develop-win/)
 
-MonoGame is an open source implementation of the XNA APIs that allows developers to build 2D games that run on Android, iPhone, iPad, Mac, Linux and Windows using the same code base, or reusing existing XNA code that runs on Xbox 360 or Windows Phone 7.
+[MonoGame](http://monogame.net) is an open source implementation of the Microsoft XNA 4.x Framework. 
 
-MonoGame 2.0 release is a major evolution of the platform. We went from only supporting the iPhone to becoming a cross-platform stack that now also runs on Android, Mac, Linux and Windows. To help developers get started, more than twenty individual samples and more than five complete starter kits are shipped with this release.
+Our goal is to make it easy for XNA developers to create cross-platform games with extremely high code reuse.
 
-On the iOS platform, MonoGame runs on top of MonoTouch and there are at least eighteen games published on Apple’s AppStore built using the technology. This new release opens the doors for developers to publish games to the Mac AppStore using MonoMac, to Android Market using Mono for Android, and also to Windows and Linux systems using Mono.
+## Supported Platforms
 
-This major advance in the MonoGame platform was made possible by an exponential growth in the number of contributors to the project in the last seven months.   New contributors took over major components of the stack, tuned the performance, added new platforms, tuned the engine and fixed hundreds of bugs to turn MonoGame into a solid 2D gaming platform.
+* iOS (including Retina displays)
+* Android
+* Windows (OpenGL, a DirectX 11 version is currently in development)
+* Mac OS X
+* Linux
+* [Windows Store Apps](http://dev.windows.com) (for Windows 8 and Windows RT)
+* [Windows Phone 8](http://dev.windowsphone.com)
+* [PlayStation Mobile](https://psm.playstation.net/portal/en/index.html) (currently 2D only)
+* [OUYA](http://ouya.tv), an Android-based gaming console
 
-A new networking stack allows players on the same network to play with each other.   One player could be running the iOS client, while another one might be using a Mac and another one an Android device. All playing the same game.
+## Quick Start
 
-The latest framework sources can be downloaded from : http://github.com/mono/MonoGame.
+There are a few pre-requisites that you should be aware of for the various platforms. Please check them over [MonoGame](http://monogame.net/downloads) website.
 
-A group of multi-platform XNA Samples can be downloaded from : http://github.com/CartBlanche/MonoGame-Samples
+There are three quick start options available:
+* Download the latest stable release over [our website](http://monogame.net/downloads).
+* Download the latest [source code](https://github.com/mono/MonoGame/archive/develop.zip).
+* Clone the repo: `https://github.com/mono/MonoGame.git`.
 
-# ROADMAP
+## Bug Tracker
 
-    The 2.5 release will support OpenGL ES 2.0 with basic shader support.
-    The 3.x series will extend MonoGame with support for the XNA 3D APIs.
-    After 3.x is released work will begin on support for Sony PlayStation Suite SDK and Windows 8/WinRT
+Have a bug or a feature request? [Please open a new issue](https://github.com/mono/MonoGame/issues). Before opening any issue, please search for existing issues and read the [Issue Guidelines](https://github.com/necolas/issue-guidelines).
 
-# HOW YOU CAN HELP
+## Community
 
-Firstly, go over to github and register. Then fork the main repo found at https://github.com/mono/MonoGame
-This will allow you to make changes to your own repo and send us patches and enhancements, thus benefiting everyone.
+Keep track of development and community news.
 
-You can also join the active community of developers on IRC at irc.gnome.org on the #monogame channel, where the day-to-day improvements are being discussed in real time.
-If you release a game using MonoGame, please let us know so we can update our released games page, and mention MonoGame in your tweet.
+* Follow [@MonoGameTeam on Twitter](https://twitter.com/monogameteam).
+* Have a question that's not a feature request or bug report? [Ask on our discussions list.](http://monogame.codeplex.com/discussions)
+* Join us over IRC - [irc://irc.gnome.org/#monogame](http://mibbit.com/?server=irc.gnome.org&channel=%23monogame). 
 
-# SPECIAL THANKS TO
+## Contributing
 
-Jalfx (for starting this project in 2010, when it was called XNATouch)
-kjpou1
-technomage
-slygamer
-Clancey
-kangaroo
-Grapes
-taskbit
-jdindia
-vchelaru
-JorgeMagic
-jordoh
-_brain
-kelthar
-adreesteve
-mgroves
-espes
-cschwarz
-cadahl
-CircleOf14
-vostok4
-viyano
+Please read our [contributing](https://github.com/mono/MonoGame/blob/develop/CONTRIBUTING.md) guide.
 
-[Team Xamarin](http://www.xamarin.com) for their support and continued great work on all things Mono
-and everyone else that submitted patches/fixes and enhancements. Without your contributions this release would not have been possible.
+## License
 
-# Sponsors
-MonoGame is actively being worked on by...
+MonoGame is released under [Microsoft Public License (Ms-PL)](https://github.com/mono/MonoGame/blob/develop/LICENSE.txt).
 
-[Syderis Technologies](http://www.syderis.com)
+## Current Roadmap
 
-<img src="http://www.syderis.com/images/galerias/logo_normal.png" alt="Syderis Logo" title="Syderis"/>
-
-and
-
-[Savage Software Solutions Ltd.](http://www.SavageSoftwareSolutions.com/) 
-
-<img src="http://www.savagesoftwaresolutions.com/images_sav/savage_lrg.png" alt="Savage Software Solutions Logo" title="Savage Software Solutions" width="215"/>
-
-and
-
-[Some members of Team Mono - Unofficially](http://mono-project.com/) 
-
-<img src="http://mono-project.com/skins/MonoWaveWide/images/mp-mono-logo.png" width="215"/>
-
-If your company plans to use and contribute to MonoGame, why not become a sponsor. If you would like to sponsor MonoGame, please contact us.
+* The MonoGame 2.x series is now in maintenance mode.
+* MonoGame 3.0 will mark the start of full support for the entire XNA API.
+* The Content Pipeline is currently under development. This will allow compiling of assets to optimized formats for the MonoGame supported platforms in Visual Studio or MonoDevelop without requiring XNA Game Studio 4.0 installed.
+* SuperGiant Games have a version working in Google Chrome Native Client which we will merge back into our tree.
+* Raspberry Pi has been shown to be working, but still needs some work.

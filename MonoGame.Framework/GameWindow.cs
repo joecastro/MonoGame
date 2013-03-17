@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 /*
 Microsoft Public License (Ms-PL)
 MonoGame - Copyright © 2009-2012 The MonoGame Team
@@ -95,6 +95,24 @@ namespace Microsoft.Xna.Framework {
 			}
 		}
 
+        /// <summary>
+        /// Determines whether the border of the window is visible. Currently only supported on the WinDX and WinGL/Linux platforms.
+        /// </summary>
+        /// <exception cref="System.NotImplementedException">
+        /// Thrown when trying to use this property on a platform other than the WinDX and WinGL/Linux platforms.
+        /// </exception>
+        public virtual bool IsBorderless
+        {
+            get
+            {
+                return false;
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 		#endregion Properties
 
 		#region Events
@@ -102,6 +120,21 @@ namespace Microsoft.Xna.Framework {
 		public event EventHandler<EventArgs> ClientSizeChanged;
 		public event EventHandler<EventArgs> OrientationChanged;
 		public event EventHandler<EventArgs> ScreenDeviceNameChanged;
+
+#if WINDOWS || LINUX
+
+		/// <summary>
+		/// Use this event to retrieve text for objects like textbox's.
+		/// This event is not raised by noncharacter keys.
+		/// This event also supports key repeat.
+		/// For more information this event is based off:
+		/// http://msdn.microsoft.com/en-AU/library/system.windows.forms.control.keypress.aspx
+		/// </summary>
+		/// <remarks>
+		/// This event is only supported on the Windows DirectX, Windows OpenGL and Linux platforms.
+		/// </remarks>
+		public event EventHandler<TextInputEventArgs> TextInput;
+#endif
 
 		#endregion Events
 
@@ -121,19 +154,17 @@ namespace Microsoft.Xna.Framework {
 
 		protected void OnClientSizeChanged ()
 		{
-			var handler = ClientSizeChanged;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			if (ClientSizeChanged != null)
+				ClientSizeChanged (this, EventArgs.Empty);
 		}
 
 		protected void OnDeactivated ()
 		{
 		}
-
+         
 		protected void OnOrientationChanged ()
 		{
-			var handler = OrientationChanged;
-			if (handler != null)
+			if (OrientationChanged != null)
 				OrientationChanged (this, EventArgs.Empty);
 		}
 
@@ -143,10 +174,17 @@ namespace Microsoft.Xna.Framework {
 
 		protected void OnScreenDeviceNameChanged ()
 		{
-			var handler = ScreenDeviceNameChanged;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			if (ScreenDeviceNameChanged != null)
+				ScreenDeviceNameChanged (this, EventArgs.Empty);
 		}
+
+#if WINDOWS || LINUX
+		protected void OnTextInput(object sender, TextInputEventArgs e)
+		{
+			if (TextInput != null)
+				TextInput(sender, e);
+		}
+#endif
 
 		protected internal abstract void SetSupportedOrientations (DisplayOrientation orientations);
 		protected abstract void SetTitle (string title);
