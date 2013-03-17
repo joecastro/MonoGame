@@ -42,18 +42,15 @@ using System;
 
 namespace Microsoft.Xna.Framework
 {
-	[Flags]
-	public enum DisplayOrientation
-	{
-		Default = 1,
-		LandscapeLeft = 2,
-		LandscapeRight = 4,
-		Portrait = 8,
-		// iPhone specific Orientations
-		FaceDown = 16,
-		FaceUp = 32,
-		PortraitUpsideDown = 64,
-		Unknown = 128,
-	}
+    [Flags]
+    public enum DisplayOrientation
+    {
+        Default = 0,
+        LandscapeLeft = 1,
+        LandscapeRight = 2,
+        Portrait = 4,
+        PortraitDown = 8,
+        Unknown = 16
+    }
 }
 

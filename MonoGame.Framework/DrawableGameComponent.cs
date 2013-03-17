@@ -44,73 +44,65 @@ namespace Microsoft.Xna.Framework
 {
     public class DrawableGameComponent : GameComponent, IDrawable
     {
-        private bool _isInitialized;
-        private bool _isVisible;
+        private bool _initialized;
         private int _drawOrder;
-
-        public event EventHandler DrawOrderChanged;
-        public event EventHandler VisibleChanged;
-
-        public DrawableGameComponent(Game game)
-            : base(game)
-        {
-            Visible = true;
-        }
-
-        public override void Initialize()
-        {
-            if (!_isInitialized)
-            {
-                _isInitialized = true;
-                LoadContent();
-            }
-        }
-
-        protected virtual void LoadContent()
-        {
-        }
-
-        protected virtual void UnloadContent()
-        {
-        }
-
-        #region IDrawable Members
+        private bool _visible = true;
 
         public int DrawOrder
         {
             get { return _drawOrder; }
             set
             {
-                _drawOrder = value;
-                if(DrawOrderChanged != null)
-                    DrawOrderChanged(this, null);
-
-                OnDrawOrderChanged(this, null);
+                if (_drawOrder != value)
+                {
+                    _drawOrder = value;
+                    if (DrawOrderChanged != null)
+                        DrawOrderChanged(this, null);
+                    OnDrawOrderChanged(this, null);
+                }
             }
         }
 
         public bool Visible
         {
-            get { return _isVisible; }
+            get { return _visible; }
             set
             {
-                if (_isVisible != value)
+                if (_visible != value)
                 {
-                    _isVisible = value;
-
-                    var handler = VisibleChanged;
-                    if (handler != null)
-                        handler(this, EventArgs.Empty);
-
+                    _visible = value;
+                    if (VisibleChanged != null)
+                        VisibleChanged(this, EventArgs.Empty);
                     OnVisibleChanged(this, EventArgs.Empty);
                 }
             }
         }
 
-        public virtual void Draw(GameTime gameTime) { }
-        protected virtual void OnVisibleChanged(object sender, EventArgs args) { }
-        protected virtual void OnDrawOrderChanged(object sender, EventArgs args) { }
+        public event EventHandler<EventArgs> DrawOrderChanged;
+        public event EventHandler<EventArgs> VisibleChanged;
 
-        #endregion
+        public DrawableGameComponent(Game game)
+            : base(game)
+        {
+        }
+
+        public override void Initialize()
+        {
+            if (!_initialized)
+            {
+                _initialized = true;
+                LoadContent();
+            }
+        }
+
+        protected virtual void LoadContent() { }
+
+        protected virtual void UnloadContent () { }
+
+        public virtual void Draw(GameTime gameTime) { }
+
+        protected virtual void OnVisibleChanged(object sender, EventArgs args) { }
+
+        protected virtual void OnDrawOrderChanged(object sender, EventArgs args) { }
     }
 }

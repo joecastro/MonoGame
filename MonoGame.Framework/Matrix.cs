@@ -26,9 +26,17 @@ SOFTWARE.
 #endregion License
 
 using System;
+#if WINRT
+using System.Runtime.Serialization;
+#endif
 
 namespace Microsoft.Xna.Framework
 {
+    #if WINRT
+    [DataContract]
+    #else
+    [Serializable]
+    #endif
     public struct Matrix : IEquatable<Matrix>
     {
         #region Public Constructors
@@ -58,22 +66,69 @@ namespace Microsoft.Xna.Framework
 
 
         #region Public Fields
-
+#if WINRT
+        [DataMember]
+#endif
         public float M11;
+#if WINRT
+        [DataMember]
+#endif
         public float M12;
+#if WINRT
+        [DataMember]
+#endif
         public float M13;
+#if WINRT
+        [DataMember]
+#endif
         public float M14;
+#if WINRT
+        [DataMember]
+#endif
         public float M21;
+#if WINRT
+        [DataMember]
+#endif
         public float M22;
+#if WINRT
+        [DataMember]
+#endif
         public float M23;
+#if WINRT
+        [DataMember]
+#endif
         public float M24;
+#if WINRT
+        [DataMember]
+#endif
         public float M31;
+#if WINRT
+        [DataMember]
+#endif
         public float M32;
+#if WINRT
+        [DataMember]
+#endif
         public float M33;
+#if WINRT
+        [DataMember]
+#endif
         public float M34;
+#if WINRT
+        [DataMember]
+#endif
         public float M41;
+#if WINRT
+        [DataMember]
+#endif
         public float M42;
+#if WINRT
+        [DataMember]
+#endif
         public float M43;
+#if WINRT
+        [DataMember]
+#endif
         public float M44;
 
         #endregion Public Fields
@@ -141,6 +196,8 @@ namespace Microsoft.Xna.Framework
 
 		
 		// required for OpenGL 2.0 projection matrix stuff
+        // TODO: have this work correctly for 3x3 Matrices. Needs to return
+        // a float[9] for a 3x3, and a float[16] for a 4x4
 		public static float[] ToFloatArray(Matrix mat)
         {
 			float [] matarray = {
@@ -262,54 +319,12 @@ namespace Microsoft.Xna.Framework
         public static Matrix CreateBillboard(Vector3 objectPosition, Vector3 cameraPosition,
             Vector3 cameraUpVector, Nullable<Vector3> cameraForwardVector)
         {
-			var diff = cameraPosition - objectPosition;
-			
-			Matrix matrix = Matrix.Identity;
-			
-			diff.Normalize();
-			matrix.Forward = diff;
-			matrix.Left = Vector3.Cross(diff, cameraUpVector);
-			matrix.Up = cameraUpVector;
-			matrix.Translation = objectPosition;
-			
-			return matrix;
-			
-            /*Matrix matrix;
-		    Vector3 vector;
-		    Vector3 vector2;
-		    Vector3 vector3;
-		    vector.X = objectPosition.X - cameraPosition.X;
-		    vector.Y = objectPosition.Y - cameraPosition.Y;
-		    vector.Z = objectPosition.Z - cameraPosition.Z;
-		    float num = vector.LengthSquared();
-		    if (num < 0.0001f)
-		    {
-		        vector = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.Forward;
-		    }
-		    else
-		    {
-		        Vector3.Multiply(ref vector, (float) (1f / ((float) Math.Sqrt((double) num))), out vector);
-		    }
-		    Vector3.Cross(ref cameraUpVector, ref vector, out vector3);
-		    vector3.Normalize();
-		    Vector3.Cross(ref vector, ref vector3, out vector2);
-		    matrix.M11 = vector3.X;
-		    matrix.M12 = vector3.Y;
-		    matrix.M13 = vector3.Z;
-		    matrix.M14 = 0f;
-		    matrix.M21 = vector2.X;
-		    matrix.M22 = vector2.Y;
-		    matrix.M23 = vector2.Z;
-		    matrix.M24 = 0f;
-		    matrix.M31 = vector.X;
-		    matrix.M32 = vector.Y;
-		    matrix.M33 = vector.Z;
-		    matrix.M34 = 0f;
-		    matrix.M41 = objectPosition.X;
-		    matrix.M42 = objectPosition.Y;
-		    matrix.M43 = objectPosition.Z;
-		    matrix.M44 = 1f;
-		    return matrix;*/
+            Matrix result;
+
+            // Delegate to the other overload of the function to do the work
+            CreateBillboard(ref objectPosition, ref cameraPosition, ref cameraUpVector, cameraForwardVector, out result);
+
+            return result;
         }
 
         
@@ -317,39 +332,39 @@ namespace Microsoft.Xna.Framework
             ref Vector3 cameraUpVector, Vector3? cameraForwardVector, out Matrix result)
         {
             Vector3 vector;
-		    Vector3 vector2;
-		    Vector3 vector3;
-		    vector.X = objectPosition.X - cameraPosition.X;
-		    vector.Y = objectPosition.Y - cameraPosition.Y;
-		    vector.Z = objectPosition.Z - cameraPosition.Z;
-		    float num = vector.LengthSquared();
-		    if (num < 0.0001f)
-		    {
-		        vector = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.Forward;
-		    }
-		    else
-		    {
-		        Vector3.Multiply(ref vector, (float) (1f / ((float) Math.Sqrt((double) num))), out vector);
-		    }
-		    Vector3.Cross(ref cameraUpVector, ref vector, out vector3);
-		    vector3.Normalize();
-		    Vector3.Cross(ref vector, ref vector3, out vector2);
-		    result.M11 = vector3.X;
-		    result.M12 = vector3.Y;
-		    result.M13 = vector3.Z;
-		    result.M14 = 0f;
-		    result.M21 = vector2.X;
-		    result.M22 = vector2.Y;
-		    result.M23 = vector2.Z;
-		    result.M24 = 0f;
-		    result.M31 = vector.X;
-		    result.M32 = vector.Y;
-		    result.M33 = vector.Z;
-		    result.M34 = 0f;
-		    result.M41 = objectPosition.X;
-		    result.M42 = objectPosition.Y;
-		    result.M43 = objectPosition.Z;
-		    result.M44 = 1f;
+            Vector3 vector2;
+            Vector3 vector3;
+            vector.X = objectPosition.X - cameraPosition.X;
+            vector.Y = objectPosition.Y - cameraPosition.Y;
+            vector.Z = objectPosition.Z - cameraPosition.Z;
+            float num = vector.LengthSquared();
+            if (num < 0.0001f)
+            {
+                vector = cameraForwardVector.HasValue ? -cameraForwardVector.Value : Vector3.Forward;
+            }
+            else
+            {
+                Vector3.Multiply(ref vector, (float)(1f / ((float)Math.Sqrt((double)num))), out vector);
+            }
+            Vector3.Cross(ref cameraUpVector, ref vector, out vector3);
+            vector3.Normalize();
+            Vector3.Cross(ref vector, ref vector3, out vector2);
+            result.M11 = vector3.X;
+            result.M12 = vector3.Y;
+            result.M13 = vector3.Z;
+            result.M14 = 0f;
+            result.M21 = vector2.X;
+            result.M22 = vector2.Y;
+            result.M23 = vector2.Z;
+            result.M24 = 0f;
+            result.M31 = vector.X;
+            result.M32 = vector.Y;
+            result.M33 = vector.Z;
+            result.M34 = 0f;
+            result.M41 = objectPosition.X;
+            result.M42 = objectPosition.Y;
+            result.M43 = objectPosition.Z;
+            result.M44 = 1f;
         }
 
         
@@ -1277,6 +1292,63 @@ namespace Microsoft.Xna.Framework
 			result.M44 = 1;
         }
 
+        public static Matrix CreateReflection(Plane value)
+        {
+            Matrix matrix;
+            value.Normalize();
+            float x = value.Normal.X;
+            float y = value.Normal.Y;
+            float z = value.Normal.Z;
+            float num3 = -2f * x;
+            float num2 = -2f * y;
+            float num = -2f * z;
+            matrix.M11 = (num3 * x) + 1f;
+            matrix.M12 = num2 * x;
+            matrix.M13 = num * x;
+            matrix.M14 = 0f;
+            matrix.M21 = num3 * y;
+            matrix.M22 = (num2 * y) + 1f;
+            matrix.M23 = num * y;
+            matrix.M24 = 0f;
+            matrix.M31 = num3 * z;
+            matrix.M32 = num2 * z;
+            matrix.M33 = (num * z) + 1f;
+            matrix.M34 = 0f;
+            matrix.M41 = num3 * value.D;
+            matrix.M42 = num2 * value.D;
+            matrix.M43 = num * value.D;
+            matrix.M44 = 1f;
+            return matrix;
+        }
+
+        public static void CreateReflection(ref Plane value, out Matrix result)
+        {
+            Plane plane;
+            Plane.Normalize(ref value, out plane);
+            value.Normalize();
+            float x = plane.Normal.X;
+            float y = plane.Normal.Y;
+            float z = plane.Normal.Z;
+            float num3 = -2f * x;
+            float num2 = -2f * y;
+            float num = -2f * z;
+            result.M11 = (num3 * x) + 1f;
+            result.M12 = num2 * x;
+            result.M13 = num * x;
+            result.M14 = 0f;
+            result.M21 = num3 * y;
+            result.M22 = (num2 * y) + 1f;
+            result.M23 = num * y;
+            result.M24 = 0f;
+            result.M31 = num3 * z;
+            result.M32 = num2 * z;
+            result.M33 = (num * z) + 1f;
+            result.M34 = 0f;
+            result.M41 = num3 * plane.D;
+            result.M42 = num2 * plane.D;
+            result.M43 = num * plane.D;
+            result.M44 = 1f;
+        }
 
         public static Matrix CreateWorld(Vector3 position, Vector3 forward, Vector3 up)
         {
@@ -2016,25 +2088,29 @@ namespace Microsoft.Xna.Framework
         
         public static void Transpose(ref Matrix matrix, out Matrix result)
         {
-            result.M11 = matrix.M11;
-            result.M12 = matrix.M21;
-            result.M13 = matrix.M31;
-            result.M14 = matrix.M41;
+            Matrix ret;
+            
+            ret.M11 = matrix.M11;
+            ret.M12 = matrix.M21;
+            ret.M13 = matrix.M31;
+            ret.M14 = matrix.M41;
 
-            result.M21 = matrix.M12;
-            result.M22 = matrix.M22;
-            result.M23 = matrix.M32;
-            result.M24 = matrix.M42;
+            ret.M21 = matrix.M12;
+            ret.M22 = matrix.M22;
+            ret.M23 = matrix.M32;
+            ret.M24 = matrix.M42;
 
-            result.M31 = matrix.M13;
-            result.M32 = matrix.M23;
-            result.M33 = matrix.M33;
-            result.M34 = matrix.M43;
+            ret.M31 = matrix.M13;
+            ret.M32 = matrix.M23;
+            ret.M33 = matrix.M33;
+            ret.M34 = matrix.M43;
 
-            result.M41 = matrix.M14;
-            result.M42 = matrix.M24;
-            result.M43 = matrix.M34;
-            result.M44 = matrix.M44;
+            ret.M41 = matrix.M14;
+            ret.M42 = matrix.M24;
+            ret.M43 = matrix.M34;
+            ret.M44 = matrix.M44;
+            
+            result = ret;
         }
         #endregion Public Methods
 		
@@ -2105,7 +2181,6 @@ namespace Microsoft.Xna.Framework
                 
                 rotation = Quaternion.CreateFromRotationMatrix(m1);
                 return true;
-        }
-			
+        }			
     }
 }

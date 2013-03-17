@@ -87,6 +87,7 @@ namespace Microsoft.Xna.Framework.Net
 		private GamerCollection<NetworkGamer> _previousGamers;
 		
 		internal Queue<CommandEvent> commandQueue;
+        bool disposed;
 
 		// use the static Create or BeginCreate methods
 		private NetworkSession ()
@@ -94,6 +95,11 @@ namespace Microsoft.Xna.Framework.Net
 			activeSessions.Add(this);
 		}
 		
+        ~NetworkSession()
+        {
+            Dispose(false);
+        }
+
 		private NetworkSessionType sessionType;
 		private int maxGamers;
 		private int privateGamerSlots;
@@ -237,29 +243,33 @@ namespace Microsoft.Xna.Framework.Net
 		public void Dispose ()
 		{
 			this.Dispose(true);
-			GC.SuppressFinalize (this);				
+			GC.SuppressFinalize(this);				
 		}
 		
 		public void Dispose (bool disposing) 
 		{
-#if DEBUG
-			Console.WriteLine("Network Session Disposing");
-#endif
-			if (disposing) {
-				
-				foreach (Gamer gamer in _allGamers) {
-					gamer.Dispose();
-				}
-				//Console.WriteLine("disposing");
-				// Make sure we shut down our server instance as we no longer need it.
-				if (networkPeer != null) {
-					networkPeer.ShutDown();
-				}
-				if (networkPeer != null) {
-					networkPeer.ShutDown();					
-				}				
-				this._isDisposed = true;
-			}
+            if (!_isDisposed)
+            {
+                if (disposing)
+                {
+                    foreach (Gamer gamer in _allGamers)
+                    {
+                        gamer.Dispose();
+                    }
+
+                    // Make sure we shut down our server instance as we no longer need it.
+                    if (networkPeer != null)
+                    {
+                        networkPeer.ShutDown();
+                    }
+                    if (networkPeer != null)
+                    {
+                        networkPeer.ShutDown();
+                    }
+                }
+
+                this._isDisposed = true;
+            }
 		}
 
 	#endregion
@@ -569,7 +579,11 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			int hostGamer = -1;
 			hostGamer = GetHostingGamerIndex(localGamers);
+#if WINDOWS_PHONE
+            return Find(sessionType, hostGamer, 4, null);
+#else
 			return EndFind(BeginFind(sessionType, hostGamer, 4, searchProperties,null,null));
+#endif
 		}
 
 		public static AvailableNetworkSessionCollection Find (
@@ -612,7 +626,11 @@ namespace Microsoft.Xna.Framework.Net
 
 		public static NetworkSession Join (AvailableNetworkSession availableSession)
 		{
+#if WINDOWS_PHONE
+            return JoinSession(availableSession);
+#else
 			return EndJoin(BeginJoin(availableSession, null, null));
+#endif
 
 		}
 		
@@ -680,7 +698,7 @@ namespace Microsoft.Xna.Framework.Net
 		{
 			// Updates the state of the multiplayer session. 
 			try {
-				while (commandQueue.Count > 0) {
+				while (commandQueue.Count > 0 && networkPeer.IsReady) {
 					var command = (CommandEvent)commandQueue.Dequeue();
 					
 					// for some screwed up reason we are dequeueing something
